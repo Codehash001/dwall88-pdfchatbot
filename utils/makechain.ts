@@ -4,6 +4,9 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
 
+const max_tokens = Number(process.env.MAX_TOEKNS)
+const temperature = Number(process.env.TEMPERATURE)
+
 const CONDENSE_PROMPT =
   PromptTemplate.fromTemplate(`Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question. "add according to the provided context" at the end.
 
@@ -18,6 +21,7 @@ const QA_PROMPT = PromptTemplate.fromTemplate(
   {context}\n
   ---------------------\n
   Given this information, Please answer my question in the same language that I used to ask you.\n
+  Should summarize the answer less than ${max_tokens} Tokens.\n
   Please answer the question: {question}\n
 
 =========
@@ -29,12 +33,13 @@ export const makeChain = (
   onTokenStream?: (token: string) => void,
 ) => {
   const questionGenerator = new LLMChain({
-    llm: new OpenAIChat({ temperature: 0 }),
+    llm: new OpenAIChat({ temperature: temperature , maxTokens:max_tokens }),
     prompt: CONDENSE_PROMPT,
   });
   const docChain = loadQAChain(
     new OpenAIChat({
-      temperature: 0.7,
+      temperature: temperature,
+      maxTokens: max_tokens,
       modelName: 'gpt-3.5-turbo', //change this to older versions (e.g. gpt-3.5-turbo) if you don't have access to gpt-4
       streaming: Boolean(onTokenStream),
       callbackManager: onTokenStream
