@@ -30,16 +30,19 @@ const readFile = (
   });
 };
 
-const getFilesHandler: NextApiHandler = async (_req, res) => {
+const getFilesHandler: NextApiHandler = async (req : NextApiRequest, res : NextApiResponse) => {
   try {
-    const files = await fs.readdir(path.join(process.cwd() + "/public", "/docs"));
+    const files = await fs.readdir(
+      path.join(process.cwd(), 'public', 'docs')
+    );
     res.status(200).json({ files });
   } catch (error) {
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error reading directory:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
 
-const deleteFileHandler: NextApiHandler = async (req, res) => {
+const deleteFileHandler: NextApiHandler = async (req : NextApiRequest, res : NextApiResponse) => {
   const { fileName } = req.query;
   try {
     await fs.unlink(path.join(process.cwd() + "/public/docs", fileName as string));
@@ -49,7 +52,7 @@ const deleteFileHandler: NextApiHandler = async (req, res) => {
   }
 };
 
-const uploadFileHandler: NextApiHandler = async (req, res) => {
+const uploadFileHandler: NextApiHandler = async (req : NextApiRequest, res : NextApiResponse) => {
   try {
     await fs.readdir(path.join(process.cwd() + "/public", "/docs"));
   } catch (error) {
@@ -59,7 +62,7 @@ const uploadFileHandler: NextApiHandler = async (req, res) => {
   res.status(200).json({ message: "File uploaded successfully" });
 };
 
-const handler: NextApiHandler = (req, res) => {
+const handler: NextApiHandler = (req : NextApiRequest, res : NextApiResponse) => {
   if (req.method === "GET") {
     getFilesHandler(req, res);
   } else if (req.method === "DELETE") {
