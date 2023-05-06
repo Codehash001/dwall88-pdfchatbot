@@ -4,6 +4,11 @@ import { PineconeStore } from 'langchain/vectorstores';
 import { PromptTemplate } from 'langchain/prompts';
 import { CallbackManager } from 'langchain/callbacks';
 
+
+export const config = {
+  runtime: "edge",
+}; 
+
 const max_tokens = Number(process.env.MAX_TOEKNS)
 const temperature = Number(process.env.TEMPERATURE)
 
@@ -41,7 +46,7 @@ export const makeChain = (
       temperature: temperature,
       maxTokens: max_tokens,
       modelName: 'gpt-3.5-turbo', //change this to older versions (e.g. gpt-3.5-turbo) if you don't have access to gpt-4
-      streaming: true,
+      streaming: Boolean(onTokenStream),
       callbackManager: onTokenStream
         ? CallbackManager.fromHandlers({
             async handleLLMNewToken(token) {
