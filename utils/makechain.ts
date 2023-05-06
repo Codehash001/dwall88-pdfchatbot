@@ -41,7 +41,7 @@ export const makeChain = (
       temperature: temperature,
       maxTokens: max_tokens,
       modelName: 'gpt-3.5-turbo', //change this to older versions (e.g. gpt-3.5-turbo) if you don't have access to gpt-4
-      streaming: Boolean(onTokenStream),
+      streaming: true,
       callbackManager: onTokenStream
         ? CallbackManager.fromHandlers({
             async handleLLMNewToken(token) {
